@@ -20,7 +20,7 @@ do
 	input_file_prefix=${input_file_base%.*}
 	output_file_base=$input_file_prefix".out"
 	output_file=$output_dir/$output_file_base
-	blastn -db $original_genome_base -query $input_file -out $output_file -outfmt '10 qstart qend qseq sstart send sseq' -max_target_seqs 1
+	blastn -db $original_genome_base -query $input_file -out $output_file -outfmt '6 qstart qend qseq sseq' -max_target_seqs 1
 done
 
 rm $original_genome_base*
