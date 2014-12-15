@@ -1,6 +1,16 @@
 //Assuming that start and end are including and the index is zero based. Change the values of start and end accordingly.
 //considers normal as well as reverse reads
 //takes overlapping into consideration.
+
+/*
+	Takes the following input:
+
+	argv[1]: <file_name>.alignedfasta
+	argv[2]: <file_name>.events
+	argv[3]: <svm_op_dir>
+	argv[4]: <nb_op_dir>
+*/
+
 #include<iostream>
 #include<fstream>
 #include<vector>
@@ -65,14 +75,14 @@ long long int getLabel(string s,char gap)
 }
 int main(int argc, char *argv[])
 {
-	if(argc!=3)
-		cout<<"Incorrect usage... Please provide two arguments... Usage ./<executable> <alignedfasta> <events>\n";
+	if(argc!=5)
+		cout<<"Incorrect usage... Please provide two arguments... Usage ./<executable> <alignedfasta> <events> <svm_output_dir> <nb_output_dir>\n";
 	else
 	{
 		ifstream fast_five(argv[2]);
 		if(!fast_five.is_open())
 		{
-			cout<<"Could not open fast5 file\n";
+			cout<<"Could not open events file\n";
 			return 0;
 		}
 		ifstream fasta(argv[1]);
@@ -133,10 +143,18 @@ int main(int argc, char *argv[])
 		cout<<"Filenames are same!!\n";
 		x1[j]='.';x1[j+1]='s';x1[j+2]='v';x1[j+3]='m';
 		x1[j+4]=='\0';
-		ofstream outfilesvm(x1);
+		char *fPath1=new char [strlen(x1)+strlen(argv[3])+5];
+		strcat(fPath1,argv[3]);
+		strcat(fPath1,x1);
+		cout<<fPath1<<"\n";
+		ofstream outfilesvm(fPath1);
 		x2[j]='.';x2[j+1]='n';x2[j+2]='b';
 		x2[j+3]=='\0';
-		ofstream outfilenb(x2);
+		char *fPath2=new char [strlen(x2)+strlen(argv[4])+5];
+		strcat(fPath2,argv[4]);
+		strcat(fPath2,x2);
+		cout<<fPath2<<"\n";
+		ofstream outfilenb(fPath2);
 		string x,aligned_read;
 		long long int start,end;
 		fasta>>start;
