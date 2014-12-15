@@ -10,7 +10,9 @@
 ##                $6 -> output dir of the alignedfasta files
 ##                $7 -> blast script
 ##                $8 -> remove gap script
-##                $9 -> 
+##                $9 -> feature vector extraction script
+## 		  $10 -> output dir for FVs of svm
+##		  $11 -> output dir foe FVs of bayes
 
 ## Parse the input arguments
 
@@ -46,6 +48,18 @@ chomp($blast);
 ## remove gaps script
 my $remove_gap = $ARGV[7];
 chomp($remove_gap);
+
+## feature extraction script binary
+my $feature_extract = $ARGV[8];
+chomp($feature_extract);
+
+## svm output folder containing FVs
+my $output_svm_dir = $ARGV[9];
+chomp($output_svm_dir);
+
+## Naive Bayes folder containing FVs
+my $output_bayes_dir = $ARGV[10];
+chomp($output_bayes_dir);
 
 ## Incase we need to keep the count
 my $counter =0;
@@ -100,4 +114,28 @@ if ($? == -1) {
 
 ## Remove the out files in the aligned fasta dir
 `rm $output_alignedfasta_dir/*.out`;
+
+## Run the feature vector extraction script
+
+# open the aligned fasta dir and recurse through the files
+my $alignedfasta_dir = $output_alignedfasta_dir;
+chomp($alignedfasta_dir);
+opendir(D1, $dir);
+
+while(my $alignedfasta_file = readdir(D1)) {
+
+  ## Get the alignedfata file
+  if ($alignedfasta_file =~ /(.*)\.alignedfasta$/) {
+    my $eventfile = "$output_events_dir" . "/$1.events";
+    ## get the corresponding events file
+    if (-e $eventfile) {
+      ## Run the feature extraction script (P.S may need to shift to system)
+      `$feature_extract $alignedfasta_file $eventfile $output_svm_dir $output_bayes_dir`
+    }
+    else {
+      print "\n=== WARNING:- Corresponding events does not exist for alignedfasta file $alignedfasta_file ===";
+    }
+}
+
+
 
