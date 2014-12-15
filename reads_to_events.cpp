@@ -1,4 +1,4 @@
-//assuming that start and end are including and the index is zero based. Change the values of start and end accordingly.
+//Assuming that start and end are including and the index is zero based. Change the values of start and end accordingly.
 //considers normal as well as reverse reads
 //takes overlapping into consideration.
 #include<iostream>
@@ -6,8 +6,10 @@
 #include<vector>
 #include<cstdlib>
 #include<string>
+#include<cstring>
+#define gv(mod) ((3)+(mod))%(3)
 using namespace std;
-char gap='_';
+char gap='-';
 
 int overlap(string x,string y)
 {
@@ -64,7 +66,7 @@ long long int getLabel(string s,char gap)
 int main(int argc, char *argv[])
 {
 	if(argc!=3)
-		cout<<"Incorrect usage... Please provide two arguments... Usage ./<executable> <fasta> <fast5>\n";
+		cout<<"Incorrect usage... Please provide two arguments... Usage ./<executable> <alignedfasta> <events>\n";
 	else
 	{
 		ifstream fast_five(argv[2]);
@@ -82,29 +84,86 @@ int main(int argc, char *argv[])
 		char *x1=new char [1000];
 		char *x2=new char [1000];
 		int i;
-		argv[2];
-		for(i=0;argv[2][i]!='.';i++)
+		int lastslash1=-1,lastslash2=-1,dot1=-1,dot2=-1,j1=0,j2=0,j;
+		cout<<"done1\n";
+		for(i=0;argv[1][i]!='\0';i++)
 		{
-			x1[i]=argv[2][i];
-			x2[i]=x1[i];
+			if(argv[1][i]=='/')
+				lastslash1=i;
+			if(argv[1][i]=='.')
+				dot1=i;
 		}
-		x1[i]='.';x1[i+1]='s';x1[i+2]='v';x1[i+3]='m';
-		x1[i+4]=='\0';
+		cout<<"done2\n";
+		for(i=lastslash1+1;i<dot1;i++)
+			x1[j1++]=argv[1][i];
+		cout<<"done3\n";
+		// part 1 done
+		for(i=0;argv[2][i]!='\0';i++)
+		{
+			if(argv[2][i]=='/')
+				lastslash2=i;
+			if(argv[2][i]=='.')
+				dot2=i;
+		}
+		cout<<"done4\n";
+		for(i=lastslash2+1;i<dot2;i++)
+			x2[j2++]=argv[2][i];
+		cout<<"done5\n";
+		
+		if(j1!=j2)
+		{
+			cout<<"Filenames are not same\n";
+			cout<<"done11\n";
+			return 0;
+		}
+		cout<<"done6\n";
+		j=j1;
+		x1[j1]='\0';
+		x2[j2]='\0';
+		cout<<x1<<"\n"<<x2<<"\n";
+		for(i=0;i<j;i++)
+			if(x1[i]!=x2[i])
+				{
+					cout<<"Filenames are not same\n";
+					cout<<"done12\n";
+					cout<<i<<"\n";
+					cout<<x1[i]<<" "<<x2[i]<<"\n";
+					return 0;
+				}
+		cout<<"Filenames are same!!\n";
+		x1[j]='.';x1[j+1]='s';x1[j+2]='v';x1[j+3]='m';
+		x1[j+4]=='\0';
 		ofstream outfilesvm(x1);
-		x2[i]='.';x2[i+1]='n';x2[i+2]='b';
-		x2[i+3]=='\0';
+		x2[j]='.';x2[j+1]='n';x2[j+2]='b';
+		x2[j+3]=='\0';
 		ofstream outfilenb(x2);
-		string aligned_read;
+		string x,aligned_read;
 		long long int start,end;
 		fasta>>start;
 		fasta>>end;
+		fasta>>x;
 		fasta>>aligned_read;
+		cout<<start<<"\n"<<end<<"\n"<<x<<"\n"<<aligned_read;
+		if(start>end)
+		{
+			int swap=start;
+			start=end;
+			end=swap;
+			int i_,j_;
+			for(i_=0,j_=aligned_read.size()-1;i_<=j_;i_++,j_--)
+			{
+				char s=aligned_read[i_];
+				aligned_read[i_]=aligned_read[j_];
+				aligned_read[j_]=s;
+			}
+		}
 		string tok;
-		int counter=-1,fasti=-1,top=-1;i=-1;
-		vector<string> event[5];// 0-> mean,1->start, 2->std, 3->length, 4->model state 
-		int *indirection=(int *)calloc(10000,sizeof(int));
+		int counter=-1,fasti=-1,top=-1,ctr=0;
+		i=-1;
+		string event[3][5];// 0-> mean,1->start, 2->std, 3->length, 4->model state 
+		vector<string> state;
 		string curr,prev;
-		cout<<"control flow here\n";
+		cout<<"howdy\n";
 		cout<<"aligned read size="<<aligned_read.size()<<"\n";
 		while(fast_five>>tok)
 		{
@@ -115,43 +174,54 @@ int main(int argc, char *argv[])
 				if(counter>=16)
 				{
 					if(attr>=2 && attr<=6)
-						event[attr-2].push_back(tok);
+						state.push_back(tok);
 					if(attr==15)
 					{
-						top++;
+						top=(top+1)%3;
+						if(top==0 && ctr==0)
+						{
+							for(int ii=0;ii<3;ii++)
+								for(int jj=0;jj<5;jj++)
+								{
+									event[ii][jj]=state[jj];
+									//cout<<event[ii][jj]<<"\n";
+								}
+							
+							ctr++;	
+						}
+						else
+						{
+							for(int ii=0;ii<5;ii++)
+								event[top][ii]=state[ii];
+						}
+						state.clear();
 						if(i==-1) // change settings here if the index is not zero based but rather 1 based.
 							i=0;
 						else
-							i=i+(5-overlap(event[4][top-1],event[4][top]));
-						indirection[i]=top;
+							i=i+(5-overlap(event[gv(top-1)][4],event[gv(top)][4]));
 						if((start<=end) && i>=start && i<=end-4)
 						{
 							if(fasti==-1)
 								fasti=0;
 							else
-								fasti=fasti+(5-overlap(event[4][top-1],event[4][top]));
-							//char gap='_';
+								fasti=fasti+(5-overlap(event[gv(top-1)][4],event[gv(top)][4]));
+							cout<<aligned_read.substr(fasti,5)<<"\n";
 							long long int label=getLabel(aligned_read.substr(fasti,5),gap);
 							if(label>0)
 							{
 								outfilesvm<<label<<" ";
-								outfilesvm<<"1:"<<event[0][top]<<" ";
-								outfilesvm<<"2:"<<event[2][top]<<" ";
-								outfilesvm<<"3:"<<event[3][top]<<" ";
-								if(top-1>=0)
-								{
-									outfilesvm<<"4:"<<event[0][top-1]<<" ";
-									outfilesvm<<"5:"<<event[2][top-1]<<" ";
-									outfilesvm<<"6:"<<event[3][top-1]<<" ";
-								}
-								if(top-2>=0)
-								{
-									outfilesvm<<"7:"<<event[0][top-2]<<" ";
-									outfilesvm<<"8:"<<event[2][top-2]<<" ";
-									outfilesvm<<"9:"<<event[3][top-2]<<" ";
-								}
+								outfilesvm<<"1:"<<event[gv(top)][0]<<" ";
+								outfilesvm<<"2:"<<event[gv(top)][2]<<" ";
+								outfilesvm<<"3:"<<event[gv(top)][3]<<" ";
+								outfilesvm<<"4:"<<event[gv(top-1)][0]<<" ";
+								outfilesvm<<"5:"<<event[gv(top-1)][2]<<" ";
+								outfilesvm<<"6:"<<event[gv(top-1)][3]<<" ";
+								outfilesvm<<"7:"<<event[gv(top-2)][0]<<" ";
+								outfilesvm<<"8:"<<event[gv(top-2)][2]<<" ";
+								outfilesvm<<"9:"<<event[gv(top-2)][3]<<" ";
 								outfilesvm<<"\n";
-								outfilenb<<event[0][top]<<" "<<event[2][top]<<" "<<event[3][top]<<" "<<label<<"\n";
+								
+								outfilenb<<event[gv(top)][0]<<" "<<event[gv(top)][2]<<" "<<event[gv(top)][3]<<" "<<aligned_read.substr(fasti,5)<<"\n";
 							}
 						}
 					}
@@ -159,7 +229,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		
-		if(start>end)//implies reverse strand
+		/*if(start>end)//implies reverse strand
 		{
 			int j=start-4,i_,j_;
 			int fasti=0,top_;
@@ -204,37 +274,8 @@ int main(int argc, char *argv[])
 				
 			}
 		}
-				/*counter++;
-				int attr=counter%16;
-				if(attr==2 || attr==3 || attr==4 || attr==5)
-				{
-					// start time
-					outfile<<tok<<" ";
-				}
-				if(attr==6)
-				{
-					outfile<<tok<<" ";
-					if(counter>16 && counter<32)
-					{
-						curr=tok;
-						outfile<<aligned_read.substr(i,5);
-					}
-					else if(counter>32)
-					{
-						prev=curr;
-						curr=tok;
-						i=i+(5-overlap(prev,curr));
-						//cout<<prev<<" "<<curr<<" "<<overlap(prev,curr)<<"\n";
-						outfile<<aligned_read.substr(i,5);
-					}
-				}
-				if(counter==15)
-					outfile<<"aligned_read ";
-				if(counter>0 && attr==0)
-					outfile<<"\n";
+		*/
 				
-				*/
-		
 		outfilesvm.close();
 		outfilenb.close();
 		fast_five.close();
