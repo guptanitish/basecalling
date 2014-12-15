@@ -9,6 +9,8 @@
 ##                $5 -> output dir of the events files
 ##                $6 -> output dir of the alignedfasta files
 ##                $7 -> blast script
+##                $8 -> remove gap script
+##                $9 -> 
 
 ## Parse the input arguments
 
@@ -41,6 +43,10 @@ chomp($output_alignedfasta_dir);
 my $blast = $ARGV[6];
 chomp($blast);
 
+## remove gaps script
+my $remove_gap = $ARGV[7];
+chomp($remove_gap);
+
 ## Incase we need to keep the count
 my $counter =0;
 
@@ -65,6 +71,7 @@ while(my $filename = readdir(D)) {
     my $outputfile_fasta = ">./$output_fasta_dir/$1.fasta";
     open(FD, "$outputfile_fasta");
     for(my $i=0;$i<=$#output_fasta;$i++) {
+      ## Just get the template reads
       if ($output_fasta[$i] =~ /_template/) {
         print FD "$output_fasta[$i+1]";
       }
@@ -83,3 +90,7 @@ system( "sh", "$blast", "$orig_genome_db", "$output_fasta_dir", "$output_aligned
 if ($? == -1) {
   print "failed to execute $blast: $!\n";
 }
+
+## Remove the gaps in the out files
+system("java", "$remove_gap", "$output_alignedfasta_dir");
+
