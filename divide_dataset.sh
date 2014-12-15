@@ -1,26 +1,26 @@
 #!/bin/sh
 cd $1
-total_files="$(find *.fast5 -maxdepth 1|wc -l)"
+total_files="$(find *.$2 -maxdepth 1|wc -l)"
 training_count=$((total_files * 3/5)) 
 test_count=$((total_files * 4/5))
 validation_count=$((total_files))
-mkdir validation
-mkdir test
-mkdir training
+mkdir validation_$2
+mkdir test_$2
+mkdir training_$2
 #echo $training_count
 count=0
-input_files=*.fast5
+input_files=*.$2
 for input_file in $input_files
 do
 	
 	if [ $count -lt $training_count ]
 	then
-		mv $input_file training/$input_file
+		cp $input_file training_$2/$input_file
 	elif [ $count -lt $test_count ]
 	then
-		mv $input_file test/$input_file
+		cp $input_file test_$2/$input_file
 	else
-		mv $input_file validation/$input_file
+		cp $input_file validation_$2/$input_file
 	fi
 	count=$((count+1))
 done
