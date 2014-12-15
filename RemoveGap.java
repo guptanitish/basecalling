@@ -25,7 +25,7 @@ public class RemoveGap{
 			{
 				File outFile = outFiles[c];
 				String fileName = outFile.getName();
-				System.out.println(fileName);
+				//System.out.println(fileName);
 				String fileNameWoExt = fileName.substring(0,fileName.lastIndexOf("."));
 				br = new BufferedReader(new FileReader(outFile));
 				st = new StringTokenizer(br.readLine());
@@ -69,7 +69,7 @@ public class RemoveGap{
 			}
 			catch (Exception e)
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 

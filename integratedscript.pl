@@ -79,8 +79,8 @@ while(my $filename = readdir(D)) {
     close(FD);
     print "$counter\n";
 
-    if ($counter == 10) {
-      break;
+    if ($counter == 30) {
+      last;
     }
   }
 }
@@ -92,5 +92,12 @@ if ($? == -1) {
 }
 
 ## Remove the gaps in the out files
+system("javac", "$remove_gap".".java");
 system("java", "$remove_gap", "$output_alignedfasta_dir");
+if ($? == -1) {
+  print "failed to execute $blast: $!\n";
+}
+
+## Remove the out files in the aligned fasta dir
+`rm $output_alignedfasta_dir/*.out`;
 
