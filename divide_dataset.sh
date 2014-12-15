@@ -1,9 +1,12 @@
 #!/bin/sh
 cd $1
-total_files="$(find *.$2 -maxdepth 1|wc -l)"
+total_files="$(ls|grep $2|wc -l)"
 training_count=$((total_files * 3/5)) 
 test_count=$((total_files * 4/5))
 validation_count=$((total_files))
+echo $training_count
+echo " "
+echo $test_count
 mkdir validation_$2
 mkdir test_$2
 mkdir training_$2

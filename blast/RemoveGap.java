@@ -60,8 +60,14 @@ public class RemoveGap{
 
 					if ((end-start+1) != temp1.length())
 						System.out.println("Query string doesn't agree with start and end, start =  " + start + ", end = " + end + ", length = " + temp1.length());
-					out.println(temp1.toString());
-					out.println(temp2.toString()); 
+					
+					int length = temp1.length();
+					for (int i = 0; i < length; ++i)
+						out.print(temp1.charAt(i));
+					out.println();
+					for (int i = 0; i < length; ++i)
+						out.print(temp2.charAt(i));
+					out.println();
 				}
 
 				out.flush();
