@@ -64,10 +64,10 @@ public class RemoveGap{
 					int length = temp1.length();
 					for (int i = 0; i < length; ++i)
 						out.print(temp1.charAt(i));
-					out.println();
+					out.print('\n');
 					for (int i = 0; i < length; ++i)
 						out.print(temp2.charAt(i));
-					out.println();
+					out.print('\n');
 				}
 
 				out.flush();
