@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#define M 5 //max number of classes in svm = 2304
+#define M 2304 //max number of classes in svm = 2304
 #define GAP '-'
 using namespace std;
 
@@ -156,10 +156,11 @@ int getLabel(char *s,char gap)
 }
 void read_file_and_fill_matrix(char *fname,char *dirname)
 {
+	//cout<<"\nChars = "<<check;
 	bool isalfasta = false;
 	const int file_name_len = strlen(fname);
 	//cout<<"\n"<<fname;
-	if(M==5)
+	/*if(M==5)
 	{
 		if(fname[file_name_len-7]=='e'&&fname[file_name_len-6]=='d' &&fname[file_name_len-5]=='f' && fname[file_name_len-4]=='a'&& fname[file_name_len-3]=='s'&& fname[file_name_len-2]=='t'&& fname[file_name_len-1]=='a')
 		isalfasta=true;
@@ -168,13 +169,14 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 		cout<<"\n Hey, this is not aligned fasta file!";
 		return;
 	}}
-	
+	*/
 	ifstream myfile;
 	string line;
-	
-	char *fname1 = new char[file_name_len+100];
+	//cout<<"Here!!";
+	char *fname1 = new char[file_name_len+200];
 	strcpy(fname1,dirname);
 	strcat(fname1,fname);
+	//cout<<"Here2!!";
 	myfile.open(fname1);
 	//cout<<fname1;
 	int count=0;
@@ -183,6 +185,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 		cout<<"\nCANNOT OPEN FILE!!";
 		return;
 	}
+	//cout<<"Here2!!";
 	char ch;char val[10];int index=0;
 	while(1)
 	{
@@ -196,6 +199,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	
 	val[index] = '\0';
 	int begin = atoi(val);
+	//cout<<"Val :"<<val;
 	//cout<<"\nbegin: "<<begin;
 	//fseek(myfile,index+2,SEEK_SET);
 	//myfile.seekg(index+2,myfile.beg);
@@ -213,13 +217,17 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	
 	val1[index] = '\0';
 	int end = atoi(val1);
+	//cout<<"Val1 :"<<val1;
 	int len=end-begin;
 	//cout<<"\nbegin: "<<begin<<"\tend: "<<end<<"\t diff: "<<len;
 	
-	char *predicted = new char[len+1];
-	index=0;
+	//char *predicted = new char[len+1];
+	//char *origional = new char[len+1];
+	//index=0;
+	/*
 	while(1)
 	{
+		cout<<ch;
 		myfile.get(ch);
 		if(ch=='\n')
 			break;
@@ -229,11 +237,12 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	}
 	predicted[index] = '\0';
 	
-	char *origional = new char[len+1];
+	
 	index=0;
-	while(1)
+	/*while(1)
 	{
 		myfile.get(ch);
+		cout<<ch;
 		if(ch=='\n')
 			break;
 		origional[index]=ch;
@@ -241,7 +250,11 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 		index++;
 	}
 	origional[index] = '\0';
-	
+	*/
+	string predicted,origional;
+	getline(myfile,predicted);
+	getline(myfile,origional);
+	//cout<<origional;
 	//cout<<"\nPredicted string: "<<predicted<<"\nOrigional string: "<<origional;
 	myfile.close();
 	
@@ -249,8 +262,9 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	{
 		//cout<<"\nIn 5";
 		check+=len;
-		for(int i=0;i<len;i++)
+		for(int i=0;i<(len+1);i++)
 		{
+			
 			mat[getEnum(origional[i])][getEnum(predicted[i])]++;
 		}
 	}
@@ -270,7 +284,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 				kmer_predicted[j-i]=predicted[j];
 			}
 		//	cout<<" "<<getLabel(kmer_predicted,'-')<<" "<<getLabel(kmer_origional,'-');
-			if(ngaps<1)
+			if(ngaps<=1)
 			mat[getLabel(kmer_origional,GAP)][getLabel(kmer_predicted,GAP)]++;
 		//	cout<<" after label";
 			check++;
