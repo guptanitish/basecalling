@@ -152,7 +152,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 {
 	bool isalfasta = false;
 	const int file_name_len = strlen(fname);
-	cout<<"\n"<<fname;
+	//cout<<"\n"<<fname;
 	if(M==5)
 	{
 		if(fname[file_name_len-7]=='e'&&fname[file_name_len-6]=='d' &&fname[file_name_len-5]=='f' && fname[file_name_len-4]=='a'&& fname[file_name_len-3]=='s'&& fname[file_name_len-2]=='t'&& fname[file_name_len-1]=='a')
@@ -241,7 +241,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	
 	if(M==5)
 	{
-		cout<<"\nIn 5";
+		//cout<<"\nIn 5";
 		check+=len;
 		for(int i=0;i<len;i++)
 		{
