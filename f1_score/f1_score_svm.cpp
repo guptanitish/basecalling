@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#define M 2304 //max number of classes in svm = 2304
+#define M 5 //max number of classes in svm = 2304
 #define GAP '-'
 using namespace std;
 
@@ -80,12 +80,14 @@ void calculate_f1()
 
 void display_precision()
 {
-	cout<<"\nPrecision\t";
-	for(int i=2230;i<2236;i++)
-	{
-		cout<<precision[i]<<"\t";
+	cout<<"\nPrecision\n";
+	float sum = 0.0;
+	for(int i=0;i<M;i++)
+	{	sum+=precision[i];
+		if(M==5)
+		cout<<precision[i]<<"\n";
 	}
-	cout<<"\n";
+	cout<<"\nPrecision Sum: "<<sum/M;
 }
 
 
@@ -98,11 +100,17 @@ void display_recall()
 		cout<<recall[i]<<"\t";
 	}
 	cout<<"\n";*/
-	cout<<"\nPrecision\t";
-	for(int i=2230;i<2236;i++)
+	float sum=0.0;
+	cout<<"\nRecall\n";
+	for(int i=0;i<M;i++)
 	{
-	cout<<precision[i]<<"\t";
-}
+		sum+=recall[i];
+		if(M==5)
+		cout<<recall[i]<<"\n";
+	}
+	cout<<"\nRecall Sum = "<<sum/M;
+
+
 cout<<"\n";
 }
 
@@ -308,12 +316,15 @@ void display_matrix()
 void display_f1()
 {
 	
-	cout<<"\nF1     \t\t";
+	cout<<"\nF1\n";
+	float sum=0.0;
 	for(int i=0;i<M;i++)
 	{
-		cout<<f[i]<<"\t";
+		sum+=f[i];
+		if(M==5)
+		cout<<f[i]<<"\n";
 	}
-	cout<<"\n";
+	cout<<"\nF1 sum is: "<<sum/M;
 }
 
 void read_integer_file_line_by_line()
@@ -394,6 +405,8 @@ void read_integer_file_line_by_line()
 	
 }
 
+
+
 int main(int argc, char *argv[])
 {
 	//read_integer_file_line_by_line();
@@ -408,7 +421,8 @@ int main(int argc, char *argv[])
 	calculate_f1();
 	display_precision();
 	display_recall();
-//	display_f1();
+	
+	display_f1();
 	if(check==find_sum()-M*M);
 	cout<<"\n\nEverthing fine!!\n\n";
 	
