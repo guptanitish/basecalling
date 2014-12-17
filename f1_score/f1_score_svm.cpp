@@ -87,7 +87,10 @@ void display_precision()
 		if(M==5)
 		cout<<precision[i]<<"\n";
 	}
-	cout<<"\nPrecision Sum: "<<sum/M;
+	if(M==5)
+		cout<<"\nPrecision Sum = "<<sum/M;
+	else
+		cout<<"\nPrecision Sum = "<<sum;
 }
 
 
@@ -108,7 +111,10 @@ void display_recall()
 		if(M==5)
 		cout<<recall[i]<<"\n";
 	}
-	cout<<"\nRecall Sum = "<<sum/M;
+	if(M==5)
+		cout<<"\nRecall Sum = "<<sum/M;
+	else
+		cout<<"\nRecall Sum = "<<sum;
 
 
 cout<<"\n";
@@ -324,7 +330,11 @@ void display_f1()
 		if(M==5)
 		cout<<f[i]<<"\n";
 	}
-	cout<<"\nF1 sum is: "<<sum/M;
+	
+	if(M==5)
+		cout<<"\nF1 Sum = "<<sum/M;
+	else
+		cout<<"\nF1 Sum = "<<sum;
 }
 
 void read_integer_file_line_by_line()
