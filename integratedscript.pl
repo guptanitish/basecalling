@@ -12,7 +12,7 @@
 ##                $8 -> remove gap script
 ##                $9 -> feature vector extraction script
 ## 		  $10 -> output dir for FVs of svm
-##		  $11 -> output dir foe FVs of bayes
+##		  $11 -> output dir for FVs of bayes
 
 ## Parse the input arguments
 
@@ -93,11 +93,14 @@ while(my $filename = readdir(D)) {
     close(FD);
     print "$counter\n";
 
-    if ($counter == 30) {
+    if ($counter == 2000) {
       last;
     }
   }
 }
+    
+print "\nEvent files extraction done";
+print "\nFasta files extraction done";
 
 ## We should be having the fasta files in the $output_fasta_dir directory
 system( "sh", "$blast", "$orig_genome_db", "$output_fasta_dir", "$output_alignedfasta_dir");
@@ -105,13 +108,15 @@ if ($? == -1) {
   print "failed to execute $blast: $!\n";
 }
 
+print "\n\nBlast script executed successfully";
 ## Remove the gaps in the out files
 system("javac", "$remove_gap".".java");
 system("java", "$remove_gap", "$output_alignedfasta_dir");
 if ($? == -1) {
-  print "failed to execute $blast: $!\n";
+  print "failed to execute $remove_gap: $!\n";
 }
 
+print "\n\nremove gap script executed successfully";
 ## Remove the out files in the aligned fasta dir
 `rm $output_alignedfasta_dir/*.out`;
 
@@ -120,22 +125,23 @@ if ($? == -1) {
 # open the aligned fasta dir and recurse through the files
 my $alignedfasta_dir = $output_alignedfasta_dir;
 chomp($alignedfasta_dir);
-opendir(D1, $dir);
+opendir(D1, $alignedfasta_dir);
 
 while(my $alignedfasta_file = readdir(D1)) {
 
   ## Get the alignedfata file
   if ($alignedfasta_file =~ /(.*)\.alignedfasta$/) {
     my $eventfile = "$output_events_dir" . "/$1.events";
+    my $alignedfastafile = "$alignedfasta_dir" . "/$alignedfasta_file";
     ## get the corresponding events file
     if (-e $eventfile) {
       ## Run the feature extraction script (P.S may need to shift to system)
-      `$feature_extract $alignedfasta_file $eventfile $output_svm_dir $output_bayes_dir`
+      `$feature_extract $alignedfastafile $eventfile $output_svm_dir $output_bayes_dir`
     }
     else {
       print "\n=== WARNING:- Corresponding events does not exist for alignedfasta file $alignedfasta_file ===";
     }
+  }
 }
 
-
-
+print "\n\nextraction of feature vectors done"
