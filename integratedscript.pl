@@ -93,7 +93,7 @@ while(my $filename = readdir(D)) {
     close(FD);
     print "$counter\n";
 
-    if ($counter == 2000) {
+    if ($counter == 750) {
       last;
     }
   }
@@ -136,7 +136,7 @@ while(my $alignedfasta_file = readdir(D1)) {
     ## get the corresponding events file
     if (-e $eventfile) {
       ## Run the feature extraction script (P.S may need to shift to system)
-      `$feature_extract $alignedfastafile $eventfile $output_svm_dir $output_bayes_dir`
+      `$feature_extract $alignedfastafile $eventfile $output_svm_dir $output_bayes_dir`;
     }
     else {
       print "\n=== WARNING:- Corresponding events does not exist for alignedfasta file $alignedfasta_file ===";
