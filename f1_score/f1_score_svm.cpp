@@ -5,11 +5,12 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#define M 5 //max number of classes in svm = 2304
-
+#define M 2304 //max number of classes in svm = 2304
+#define GAP '-'
 using namespace std;
 
-int mat[M][M];
+static int mat[M][M];
+//int** mat = new int*[M];
 float precision[M];
 float recall[M];
 float f[M];
@@ -31,6 +32,7 @@ int getEnum(char c)
 	if(c=='T')return 3;
 	return 4;
 }
+
 
 void init_matrix()
 {
@@ -79,7 +81,7 @@ void calculate_f1()
 void display_precision()
 {
 	cout<<"\nPrecision\t";
-	for(int i=0;i<M;i++)
+	for(int i=2230;i<2236;i++)
 	{
 		cout<<precision[i]<<"\t";
 	}
@@ -89,25 +91,70 @@ void display_precision()
 
 void display_recall()
 {
+	/*
 	cout<<"\nRecall   \t";
 	for(int i=0;i<M;i++)
 	{
 		cout<<recall[i]<<"\t";
 	}
-	cout<<"\n";
+	cout<<"\n";*/
+	cout<<"\nPrecision\t";
+	for(int i=2230;i<2236;i++)
+	{
+	cout<<precision[i]<<"\t";
+}
+cout<<"\n";
 }
 
+
+int getLabel(char *s,char gap)
+{
+	int i,cg=0;
+	for(i=0;i<5;i++)
+		if(s[i]==gap)
+			cg++;
+		if(cg>1)
+			return -1;
+		if(cg==0)
+		{
+			long long int sum=0;
+			for(i=0;i<5;i++)
+				sum=sum*4+getEnum(s[i]);
+			return sum;
+		}
+		else
+		{
+			long long int sum=1024;
+			for(i=0;i<5;i++)
+				if(s[i]==gap)
+				{
+					sum=sum+(i*256);
+					break;
+				}
+				long long int offset=0;
+			for(i=0;i<5;i++)
+				if(s[i]!=gap)
+				{
+					offset=offset*4+getEnum(s[i]);
+				}
+				return (sum+offset);
+		}
+}
 void read_file_and_fill_matrix(char *fname,char *dirname)
 {
 	bool isalfasta = false;
 	const int file_name_len = strlen(fname);
-	if(fname[file_name_len-7]=='e'&&fname[file_name_len-6]=='d' &&fname[file_name_len-5]=='f' && fname[file_name_len-4]=='a'&& fname[file_name_len-3]=='s'&& fname[file_name_len-2]=='t'&& fname[file_name_len-1]=='a')
-		isalfasta=true;
-	if(!isalfasta) //ignoring the swapped files
+	cout<<"\n"<<fname;
+	if(M==5)
 	{
+		if(fname[file_name_len-7]=='e'&&fname[file_name_len-6]=='d' &&fname[file_name_len-5]=='f' && fname[file_name_len-4]=='a'&& fname[file_name_len-3]=='s'&& fname[file_name_len-2]=='t'&& fname[file_name_len-1]=='a')
+		isalfasta=true;
+		if(!isalfasta) //ignoring the swapped files
+		{
 		cout<<"\n Hey, this is not aligned fasta file!";
 		return;
-	}
+	}}
+	
 	ifstream myfile;
 	string line;
 	
@@ -184,10 +231,36 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 	//cout<<"\nPredicted string: "<<predicted<<"\nOrigional string: "<<origional;
 	myfile.close();
 	
-	check+=len;
-	for(int i=0;i<len;i++)
+	if(M==5)
 	{
-		mat[getEnum(origional[i])][getEnum(predicted[i])]++;
+		cout<<"\nIn 5";
+		check+=len;
+		for(int i=0;i<len;i++)
+		{
+			mat[getEnum(origional[i])][getEnum(predicted[i])]++;
+		}
+	}
+	else
+	{
+		//cout<<"\nIn 2304	";
+		char kmer_origional[5],kmer_predicted[5];
+		for(int i=0;i<len-4;i++)
+		{
+		//	cout<<"\nIn 2304 "<<i<<" len "<<len;
+			int ngaps = 0;
+			for(int j=i;j<(i+5);j++)
+			{
+				if(kmer_origional[j-i]==GAP)
+					ngaps++;
+				kmer_origional[j-i]=origional[j];
+				kmer_predicted[j-i]=predicted[j];
+			}
+		//	cout<<" "<<getLabel(kmer_predicted,'-')<<" "<<getLabel(kmer_origional,'-');
+			if(ngaps<1)
+			mat[getLabel(kmer_origional,GAP)][getLabel(kmer_predicted,GAP)]++;
+		//	cout<<" after label";
+			check++;
+		}
 	}
 }
 void fill_matrix(char *dpath)
@@ -325,15 +398,17 @@ int main(int argc, char *argv[])
 {
 	//read_integer_file_line_by_line();
 	
+	/*for(int i = 0; i < M; ++i)
+		mat[i] = new int[M];*/
 	init_matrix();
 	fill_matrix(argv[1]);
-	display_matrix();
+//	display_matrix();
 	calculate_precision();
 	calculate_recall();
 	calculate_f1();
 	display_precision();
 	display_recall();
-	display_f1();
+//	display_f1();
 	if(check==find_sum()-M*M);
 	cout<<"\n\nEverthing fine!!\n\n";
 	

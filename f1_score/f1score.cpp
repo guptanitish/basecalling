@@ -25,7 +25,7 @@ void calculate_precision()
 		int total_pos = 0;
 		for(int j=0;j<M;j++)
 		{
-			total_pos+= mat[i][j];
+			total_pos+= mat[j][i];
 		}
 		precision[i] = (float)mat[i][i]/(float)total_pos;
 	}
@@ -38,7 +38,7 @@ void calculate_recall()
 		int total_prediction = 0;
 		for(int j=0;j<M;j++)
 		{
-			total_prediction+= mat[j][i];
+			total_prediction+= mat[i][j];
 		}
 		recall[i] = (float)mat[i][i]/(float)total_prediction;
 	}
