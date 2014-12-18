@@ -3,6 +3,10 @@ package com.cs.classifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/*
+ * @author Chaitanya Saxena
+ */
 public class Main {
 
 	/**
@@ -10,10 +14,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		NBClassifier nbc = new NBClassifier("/Users/chaitanya/Documents/workspace/CompBio/file2.txt");
+		//NBClassifier nbc = new NBClassifier(args[0],args[1]);
+		NBClassifier nbc = new NBClassifier("/Users/chaitanya/Public/CompBioFinal/basecalling/training_bayes","/Users/chaitanya/Public/CompBioFinal/basecalling/testing_bayes");
+		nbc.classify();
 		
-		String result=nbc.classify("90.1913198885" ,"1.06905155728", "0.1124");
-		System.out.println(result);
 		//HashMap<String,ArrayList<Node>> hm = dm.getTrainingData();
 		//ArrayList<Node> arr = hm.get("G");
 		//for(Node n : arr){
