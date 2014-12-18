@@ -12,7 +12,7 @@ public class ResultAnalyzer1 {
 		//Output file saved in same folder with name 'output.txt'
 		PrintWriter writer = new PrintWriter(folder1+"/"+"output.txt");
 		
-		File dir = new File(folder);
+		File dir = new File(folder1);
 		
 		File[] predictedFiles = dir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
