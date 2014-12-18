@@ -14,8 +14,8 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
-		//NBClassifier nbc = new NBClassifier(args[0],args[1]);
-		NBClassifier nbc = new NBClassifier("/Users/chaitanya/Public/CompBioFinal/basecalling/training_bayes","/Users/chaitanya/Public/CompBioFinal/basecalling/testing_bayes");
+		NBClassifier nbc = new NBClassifier(args[0],args[1]);
+	//	NBClassifier nbc = new NBClassifier("/Users/chaitanya/Public/CompBioFinal/basecalling/training_bayes","/Users/chaitanya/Public/CompBioFinal/basecalling/testing_bayes");
 		nbc.classify();
 		
 		//HashMap<String,ArrayList<Node>> hm = dm.getTrainingData();
