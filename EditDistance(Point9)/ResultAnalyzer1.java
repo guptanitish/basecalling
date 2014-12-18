@@ -27,24 +27,23 @@ public class ResultAnalyzer1 {
 		int fileCount = predictedFiles.length;
 		for (int i = 0; i < fileCount; ++i) {
 			File predictedFile = predictedFiles[i];
+			String fileName = predictedFile.getName();
 			br = new BufferedReader(new FileReader(predictedFile));
     			String predictedFasta = br.readLine();
 			br.close();
-
-			String fileName = predictedFile.getName();
+			
 			String fileNameWoExt = fileName.substring(0,fileName.lastIndexOf("."));
 			br = new BufferedReader(new FileReader(folder2+"/"+fileNameWoExt+".alignedfasta"));
-			st = new StringTokenizer(br.readLine());
-			int tokenCount = 0;
-			String alignedFasta = null;
-			while(st.hasMoreTokens()) {
-				String temp = st.nextToken();
-				if (tokenCount == 3) {
-					alignedFasta = temp;
-					break;
-				}
-				tokenCount++;
-			}
+                        int tokenCount = 0;
+                        String alignedFasta = null;
+                        String temp = null;
+                        while((temp = br.readLine()) != null) {
+                                if (tokenCount == 3) {
+                                        alignedFasta = temp;
+                                        break;
+                                }
+                                tokenCount++;
+                        }
 			br.close();
 
 			if (tokenCount == 3)
