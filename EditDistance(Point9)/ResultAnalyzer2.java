@@ -10,7 +10,7 @@ public class ResultAnalyzer2 {
 		PrintWriter writer = new PrintWriter(folder+"/"+"output.txt");
 		
 		File dir = new File(folder);
-		
+	
 		File[] alignedFiles = dir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.toLowerCase().endsWith(".alignedfasta");
@@ -22,17 +22,17 @@ public class ResultAnalyzer2 {
 		long sumED = 0L;
 		long sumSqED = 0L;
 		int fileCount = alignedFiles.length;
+		
 		for (int i = 0; i < fileCount; ++i) {
 			File alignedFile = alignedFiles[i];
+			String fileName = alignedFile.getName();
 			br = new BufferedReader(new FileReader(alignedFile));
-    			st = new StringTokenizer(br.readLine());
-			br.close();
 
 			int tokenCount = 0;
 			String alignedFasta = null;
 			String predictedFasta = null;
-			while(st.hasMoreTokens()) {
-				String temp = st.nextToken();
+			String temp = null;
+			while((temp = br.readLine()) != null) {
 				if (tokenCount == 2) {
 					predictedFasta = temp;
 				}
