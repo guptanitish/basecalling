@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <dirent.h>
-#define M 2304 //max number of classes in svm = 2304
+#define M 4 //max number of classes in svm = 2304
 #define GAP '-'
 using namespace std;
 
@@ -15,7 +15,7 @@ float precision[M];
 float recall[M];
 float f[M];
 long check=0;
-
+int counter = 0;
 long find_sum()
 {
 	long sum=0;
@@ -84,10 +84,10 @@ void display_precision()
 	float sum = 0.0;
 	for(int i=0;i<M;i++)
 	{	sum+=precision[i];
-		if(M==5)
+		if(M==4)
 		cout<<precision[i]<<"\n";
 	}
-	if(M==5)
+	if(M==4)
 		cout<<"\nPrecision Sum = "<<sum/M;
 	else
 		cout<<"\nPrecision Sum = "<<sum;
@@ -108,10 +108,10 @@ void display_recall()
 	for(int i=0;i<M;i++)
 	{
 		sum+=recall[i];
-		if(M==5)
+		if(M==4)
 		cout<<recall[i]<<"\n";
 	}
-	if(M==5)
+	if(M==4)
 		cout<<"\nRecall Sum = "<<sum/M;
 	else
 		cout<<"\nRecall Sum = "<<sum;
@@ -124,7 +124,7 @@ cout<<"\n";
 int getLabel(char *s,char gap)
 {
 	int i,cg=0;
-	for(i=0;i<5;i++)
+	for(i=0;i<4;i++)
 		if(s[i]==gap)
 			cg++;
 		if(cg>1)
@@ -132,21 +132,21 @@ int getLabel(char *s,char gap)
 		if(cg==0)
 		{
 			long long int sum=0;
-			for(i=0;i<5;i++)
+			for(i=0;i<4;i++)
 				sum=sum*4+getEnum(s[i]);
 			return sum;
 		}
 		else
 		{
 			long long int sum=1024;
-			for(i=0;i<5;i++)
+			for(i=0;i<4;i++)
 				if(s[i]==gap)
 				{
-					sum=sum+(i*256);
+					sum=sum+(i*246);
 					break;
 				}
 				long long int offset=0;
-			for(i=0;i<5;i++)
+			for(i=0;i<4;i++)
 				if(s[i]!=gap)
 				{
 					offset=offset*4+getEnum(s[i]);
@@ -156,110 +156,45 @@ int getLabel(char *s,char gap)
 }
 void read_file_and_fill_matrix(char *fname,char *dirname)
 {
+	
+	
 	//cout<<"\nChars = "<<check;
-	bool isalfasta = false;
 	const int file_name_len = strlen(fname);
-	//cout<<"\n"<<fname;
-	/*if(M==5)
-	{
-		if(fname[file_name_len-7]=='e'&&fname[file_name_len-6]=='d' &&fname[file_name_len-5]=='f' && fname[file_name_len-4]=='a'&& fname[file_name_len-3]=='s'&& fname[file_name_len-2]=='t'&& fname[file_name_len-1]=='a')
-		isalfasta=true;
-		if(!isalfasta) //ignoring the swapped files
-		{
-		cout<<"\n Hey, this is not aligned fasta file!";
-		return;
-	}}
-	*/
-	ifstream myfile;
+	
+	ifstream myfile,myfile_out;
 	string line;
 	//cout<<"Here!!";
 	char *fname1 = new char[file_name_len+200];
+	char *fname_out = new char[file_name_len+200];
+	char *fname2 = new char[file_name_len+200];
 	strcpy(fname1,dirname);
 	strcat(fname1,fname);
-	//cout<<"Here2!!";
-	myfile.open(fname1);
-	//cout<<fname1;
-	int count=0;
-	if(!myfile.is_open())
-	{
-		cout<<"\nCANNOT OPEN FILE!!";
+	if((fname[file_name_len-3]=='t'&&fname[file_name_len-2]=='x' &&fname[file_name_len-1]=='t'))
 		return;
-	}
+	counter++;
+	strcpy(fname_out,fname1);
+	strcat(fname_out,"-output.txt");
+	//cout<<"\n"<<fname_out;
+	myfile.open(fname1);
+	myfile_out.open(fname_out);
 	//cout<<"Here2!!";
-	char ch;char val[10];int index=0;
-	while(1)
+	if(!myfile.is_open()) {cout<<"Input file cant be opened"; return;}
+	if(!myfile_out.is_open()){cout<<"Output file cant be opened"; return;}
+	
+	string predicted;
+	string in_string;
+	getline(myfile_out,predicted);
+	int len = predicted.length();
+	int i=0;
+	char *origional = new char[len+1]; 
+	while(getline(myfile,in_string))
 	{
-		myfile.get(ch);
-		if(ch=='\n')
-			break;
-		val[index]=ch;
-		//cout<<"\nIndex:"<<index;
-		index++;
+		origional[i] = in_string[len-3];
+		i++;
 	}
-	
-	val[index] = '\0';
-	int begin = atoi(val);
-	//cout<<"Val :"<<val;
-	//cout<<"\nbegin: "<<begin;
-	//fseek(myfile,index+2,SEEK_SET);
-	//myfile.seekg(index+2,myfile.beg);
-	char val1[10];
-	index=0;
-	while(1)
-	{
-		myfile.get(ch);
-		if(ch=='\n')
-			break;
-		val1[index]=ch;
-		//cout<<"\nIndex:"<<index;
-		index++;
-	}
-	
-	val1[index] = '\0';
-	int end = atoi(val1);
-	//cout<<"Val1 :"<<val1;
-	int len=end-begin;
-	//cout<<"\nbegin: "<<begin<<"\tend: "<<end<<"\t diff: "<<len;
-	
-	//char *predicted = new char[len+1];
-	//char *origional = new char[len+1];
-	//index=0;
-	/*
-	while(1)
-	{
-		cout<<ch;
-		myfile.get(ch);
-		if(ch=='\n')
-			break;
-		predicted[index]=ch;
-		//cout<<"\nIndex:"<<index;
-		index++;
-	}
-	predicted[index] = '\0';
-	
-	
-	index=0;
-	/*while(1)
-	{
-		myfile.get(ch);
-		cout<<ch;
-		if(ch=='\n')
-			break;
-		origional[index]=ch;
-		//cout<<"\nIndex:"<<index;
-		index++;
-	}
-	origional[index] = '\0';
-	*/
-	string predicted,origional;
-	getline(myfile,predicted);
-	getline(myfile,origional);
-	//cout<<origional;
-	//cout<<"\nPredicted string: "<<predicted<<"\nOrigional string: "<<origional;
+	origional[i] = '\0';
 	myfile.close();
-	
-	if(M==5)
-	{
+	myfile_out.close();
 		//cout<<"\nIn 5";
 		check+=len;
 		for(int i=0;i<(len+1);i++)
@@ -267,29 +202,7 @@ void read_file_and_fill_matrix(char *fname,char *dirname)
 			
 			mat[getEnum(origional[i])][getEnum(predicted[i])]++;
 		}
-	}
-	else
-	{
-		//cout<<"\nIn 2304	";
-		char kmer_origional[5],kmer_predicted[5];
-		for(int i=0;i<len-4;i++)
-		{
-		//	cout<<"\nIn 2304 "<<i<<" len "<<len;
-			int ngaps = 0;
-			for(int j=i;j<(i+5);j++)
-			{
-				if(kmer_origional[j-i]==GAP)
-					ngaps++;
-				kmer_origional[j-i]=origional[j];
-				kmer_predicted[j-i]=predicted[j];
-			}
-		//	cout<<" "<<getLabel(kmer_predicted,'-')<<" "<<getLabel(kmer_origional,'-');
-			if(ngaps<=1)
-			mat[getLabel(kmer_origional,GAP)][getLabel(kmer_predicted,GAP)]++;
-		//	cout<<" after label";
-			check++;
-		}
-	}
+	
 }
 void fill_matrix(char *dpath)
 {
@@ -298,7 +211,7 @@ void fill_matrix(char *dpath)
 	struct dirent *entry;
 	if( pDIR=opendir(dpath) ){
 		while(entry = readdir(pDIR)){
-			if( entry->d_name[0]!= '.' && strcmp(entry->d_name, "..") != 0)
+			if( entry->d_name[0]!= '.' && strcmp(entry->d_name, "..") != 0 )
 				read_file_and_fill_matrix(entry->d_name,dpath);
 		}
 		closedir(pDIR);
@@ -308,15 +221,6 @@ void fill_matrix(char *dpath)
 		cout<<"\nCant open directory!!";
 	}
 	
-	/*
-	for(int i=0;i<M;i++)
-	{
-		for(int j=0;j<M;j++)
-		{
-			cin>>mat[i][j];
-			mat[i][j]++;
-		}
-	}*/
 }
 
 
@@ -341,11 +245,11 @@ void display_f1()
 	for(int i=0;i<M;i++)
 	{
 		sum+=f[i];
-		if(M==5)
+		if(M==4)
 		cout<<f[i]<<"\n";
 	}
 	
-	if(M==5)
+	if(M==4)
 		cout<<"\nF1 Sum = "<<sum/M;
 	else
 		cout<<"\nF1 Sum = "<<sum;
@@ -447,6 +351,7 @@ int main(int argc, char *argv[])
 	display_recall();
 	
 	display_f1();
+	cout<<"\n\n"<<check<<" "<<counter;
 	if(check==find_sum()-M*M);
 	cout<<"\n\nEverthing fine!!\n\n";
 	
